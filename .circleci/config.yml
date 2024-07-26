@@ -32,6 +32,7 @@ jobs:
       - run: node ./scripts/update_pubspec_version.js # change pubspec version
 
   build_android:
+    # TODO remove flutter distributor and check for tag versions
     executor:
       name: android/android-machine
     steps:
@@ -54,7 +55,7 @@ workflows:
               only: [ "main", "beta" ]
 #          requires:
 #            - analyze_and_test
-      - build_linux_android:
+      - build_android_l:
           filters:
             branches:
               only: [ "main", "beta" ]
