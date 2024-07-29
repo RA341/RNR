@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rnr/presentation/browse/browse.dart';
-import 'package:rnr/presentation/home/home.dart';
-import 'package:rnr/presentation/settings/settings.dart';
+import 'package:rnr/presentation/setup/setup.dart';
 import 'package:rnr/providers/bottomnav.dart';
+import 'package:rnr/providers/settings.dart';
+import 'package:rnr/services/github.dart';
+import 'package:rnr/services/permission_manager.dart';
+import 'package:rnr/utils/services.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initServices();
+  await requestInstallPermissions();
   runApp(
     const ProviderScope(
       child: RNR(),
@@ -21,10 +26,42 @@ class RNR extends StatelessWidget {
     return MaterialApp(
       title: 'RNR',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
       ),
       home: const SafeArea(child: Root()),
+    );
+  }
+}
+
+class App extends ConsumerWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final firstInstall = ref.watch(settingsExistsProvider);
+
+    if (firstInstall.isLoading || firstInstall.isRefreshing) {
+      return const Scaffold(body: CircularProgressIndicator());
+    }
+
+    if (firstInstall.hasError) {
+      return Scaffold(
+        body: Text(
+          'Whoops something went wrong\n\n${firstInstall.error}',
+        ),
+      );
+    }
+
+    if (firstInstall.hasValue) {
+      return const Root();
+    }
+
+    return const Text(
+      'You have discovered a unhandled case, Congratulations!!, please report this on github.dart',
     );
   }
 }
@@ -38,6 +75,12 @@ class Root extends ConsumerWidget {
 
     return Scaffold(
       body: pages[index],
+      floatingActionButton: IconButton(
+        icon: const Icon(Icons.add),
+        onPressed: () {
+          // GithubManger.i.getReleases();
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
         onTap: (value) => ref.read(bottomNavProvider.notifier).state = value,

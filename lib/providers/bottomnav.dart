@@ -5,6 +5,6 @@ import 'package:rnr/presentation/settings/settings.dart';
 
 const pages = [HomePage(), BrowsePage(), SettingsPage()];
 final bottomNavProvider = StateProvider<int>((ref) {
-  return 0;
+  return 1;
 });
 
