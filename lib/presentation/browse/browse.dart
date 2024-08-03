@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rnr/database/models/display_release.dart';
 import 'package:rnr/providers/github.dart';
 import 'package:rnr/repos/repo_list.dart';
+import 'package:rnr/utils/services.dart';
 
 final repoIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -15,7 +17,7 @@ class BrowsePage extends StatelessWidget {
         : const Column(
             children: [
               BrowseRepoHeader(),
-              ReleaseList(),
+              Expanded(child: ReleaseList()),
             ],
           );
   }
@@ -68,15 +70,31 @@ class ReleaseList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repoIndex = ref.watch(repoIndexProvider);
+
     final repo = ref.watch(repoProvider(repoList[repoIndex]));
 
-    return ListView(
-      children: const [
-        Text('!st release'),
-        Text('!as release'),
-        Text('!asd release'),
-        Text('!asd release'),
-      ],
+    return ListView.builder(
+      itemCount: repo.length,
+      itemBuilder: (context, index) => AppView(release: repo[index]),
     );
+
+    //     git.logRateLimits();
+    //     return Text('Something went went wrong: $error');
+    //     return const CircularProgressIndicator();
+
+  }
+}
+
+class AppView extends ConsumerWidget {
+  const AppView({
+    required this.release,
+    super.key,
+  });
+
+  final DisplayRelease release;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Text(release.release.name ?? 'No release name');
   }
 }

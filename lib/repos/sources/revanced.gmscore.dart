@@ -5,6 +5,11 @@ import 'package:rnr/utils/services.dart';
 
 class GmsCore extends IRepo {
   @override
+  final repoName = 'GmsCore';
+  @override
+  final repoOwner = 'ReVanced';
+
+  @override
   List<DisplayApp> filterReleases(Release release) {
     final assets = release.assets!;
     // example release file name: app.revanced.android.gms-240913008-hw-signed.apk
@@ -45,9 +50,4 @@ class GmsCore extends IRepo {
 
     return apps;
   }
-
-  @override
-  final repoName = 'GmsCore';
-  @override
-  final repoOwner = 'ReVanced';
 }

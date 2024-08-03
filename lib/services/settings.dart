@@ -15,4 +15,35 @@ class SettingsManager {
       return true;
     }
   }
+
+  String? getGithubToken() => prefs.getString('github_pat');
+
+  Future<void> clearGithubToken() async {
+    await prefs.remove('github_pat');
+    await prefs.reload();
+    if (getI.isRegistered(instance: git)) {
+      getI.resetLazySingleton(
+        instance: git,
+        disposingFunction: (p0) {
+          p0.dispose();
+          logger.i('Github manager has been reset with github token removed');
+        },
+      );
+    }
+  }
+
+  Future<void> updateGithubToken(String accessToken) async {
+    await prefs.setString('github_pat', accessToken);
+    await prefs.reload();
+    if (getI.isRegistered(instance: git)) {
+      getI.resetLazySingleton(
+        instance: git,
+        disposingFunction: (p0) {
+          p0.dispose();
+          logger.i('Github manager has been reset with new github token: ****'
+              '${accessToken.substring((accessToken.length / 2).ceil())}');
+        },
+      );
+    }
+  }
 }
