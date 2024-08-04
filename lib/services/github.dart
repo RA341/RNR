@@ -20,8 +20,15 @@ class GithubManger {
     gitI.dispose();
   }
 
-  Stream<DisplayRelease> getReleases(
-    IRepo repo, {
+  Future<void> collectRepoInfo(IRepo repo) async {
+    final repoUrl = 'https://github.com/${repo.repoOwner}/${repo.repoName}';
+  }
+
+  (int?, int?, DateTime?) getGithubApiLimits() {
+    return (gitI.rateLimitRemaining, gitI.rateLimitLimit, gitI.rateLimitReset);
+  }
+
+  Stream<DisplayRelease> getReleases(IRepo repo, {
     int page = 1,
     int perPage = 3,
   }) async* {
@@ -34,7 +41,7 @@ class GithubManger {
       logRateLimits();
       try {
         final release =
-            await gitI.repositories.getReleaseByTagName(slug, tag.name);
+        await gitI.repositories.getReleaseByTagName(slug, tag.name);
 
         if (release.assets == null) {
           logger.w('No assets found for tag:${release.id}');
@@ -71,11 +78,10 @@ class GithubManger {
     }
   }
 
-  Stream<Tag> collectTags(
-    RepositorySlug slug,
-    int page, {
-    int perPage = 3,
-  }) async* {
+  Stream<Tag> collectTags(RepositorySlug slug,
+      int page, {
+        int perPage = 3,
+      }) async* {
     // VERY IMPORTANT ALWAYS PASS IN THE PAGES ARG ELSE IT WILL FETCH ALL PAGES
     yield* gitI.repositories.listTags(
       slug,
@@ -88,8 +94,8 @@ class GithubManger {
   void logRateLimits() {
     logger.i(
       'rateLimitLimit: ${gitI.rateLimitLimit ?? 0}\n'
-      'rateLimitRemaining: ${gitI.rateLimitRemaining ?? 0}\n'
-      'rateLimitReset: ${gitI.rateLimitReset ?? 0}',
+          'rateLimitRemaining: ${gitI.rateLimitRemaining ?? 0}\n'
+          'rateLimitReset: ${gitI.rateLimitReset ?? 0}',
     );
   }
 }

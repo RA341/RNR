@@ -26,9 +26,11 @@ class GithubReleaseNotifierS extends StateNotifier<List<DisplayRelease>> {
   final IRepo repo;
 
   int _page = 1;
+  bool isLoading = false;
 
   Future<void> fetchMore() async {
     _listenToReleaseStream(_page++);
+    if (!isLoading) {}
   }
 
   @override
@@ -38,10 +40,18 @@ class GithubReleaseNotifierS extends StateNotifier<List<DisplayRelease>> {
   }
 
   void _listenToReleaseStream(int page) {
-    logger.d('Listening to releases');
+    isLoading = true;
     git.getReleases(repo, page: page).listen(
       (event) {
         state = [...state, event];
+      },
+      onError: (Object err, StackTrace st) {
+        logger.e('Stream error',error: err,stackTrace: st);
+        isLoading = false;
+      },
+      onDone: () {
+        isLoading = false;
+        print('stream is donw');
       },
     );
   }
