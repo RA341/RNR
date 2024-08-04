@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:rnr/repos/irepo.dart';
+import 'package:rnr/repos/sources/krvstek.rvx-apks.dart';
 import 'package:rnr/repos/sources/revancedapks.buildapps.dart';
 
-final repoList = <IRepo>[BuildApps()];
+final repoList = <IRepo>[
+  BuildApps(),
+  RvxApks(),
+];
 
 final repoWidgets = () {
   final widList = <PopupMenuItem<int>>[];
