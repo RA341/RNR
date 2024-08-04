@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:github/github.dart';
-import 'package:rnr/database/models/display_app.dart';
 import 'package:rnr/database/models/display_release.dart';
 import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/utils/services.dart';
@@ -19,54 +16,11 @@ class GithubManger {
 
   late final GitHub gitI;
 
-  final appStream = StreamController<DisplayRelease>();
-
   void dispose() {
     gitI.dispose();
-    // appStream.done;
   }
 
-  Future<List<DisplayRelease>> getReleasesF(
-    IRepo repo, {
-    int page = 1,
-    int perPage = 3,
-  }) async {
-    final slug = RepositorySlug(
-      repo.repoOwner,
-      repo.repoName,
-    );
-
-    final tags = await collectTags(slug, page, perPage);
-    logRateLimits();
-    final results = <DisplayRelease>[];
-
-    for (final tag in tags) {
-      final release =
-          await gitI.repositories.getReleaseByTagName(slug, tag.name);
-      logRateLimits();
-
-      if (release.assets == null) {
-        logger.w('No assets found for tag:${release.id}');
-        results.add(
-          DisplayRelease(
-            release: release,
-            assets: null,
-          ),
-        );
-      }
-
-      results.add(
-        DisplayRelease(
-          release: release,
-          assets: repo.filterReleases(release),
-        ),
-      );
-    }
-
-    return results;
-  }
-
-  Stream<DisplayRelease> getReleasesS(
+  Stream<DisplayRelease> getReleases(
     IRepo repo, {
     int page = 1,
     int perPage = 3,
@@ -76,7 +30,7 @@ class GithubManger {
       repo.repoName,
     );
 
-    await for (final tag in collectTagsS(slug, page, perPage)) {
+    await for (final tag in collectTags(slug, page, perPage: perPage)) {
       logRateLimits();
       try {
         final release =
@@ -84,10 +38,10 @@ class GithubManger {
 
         if (release.assets == null) {
           logger.w('No assets found for tag:${release.id}');
-          appStream.add( DisplayRelease(
+          yield DisplayRelease(
             release: release,
-            assets: null,
-          ));
+            assets: repo.filterReleases(release),
+          );
         }
 
         try {
@@ -117,20 +71,18 @@ class GithubManger {
     }
   }
 
-  Stream<Tag> collectTagsS(
+  Stream<Tag> collectTags(
     RepositorySlug slug,
-    int page,
-    int perPage,
-  ) async* {
-    yield* gitI.repositories.listTags(slug, page: page, perPage: 5);
-  }
-
-  Future<List<Tag>> collectTags(
-    RepositorySlug slug,
-    int page,
-    int perPage,
-  ) async {
-    return gitI.repositories.listTags(slug, page: page, perPage: 5).toList();
+    int page, {
+    int perPage = 3,
+  }) async* {
+    // VERY IMPORTANT ALWAYS PASS IN THE PAGES ARG ELSE IT WILL FETCH ALL PAGES
+    yield* gitI.repositories.listTags(
+      slug,
+      page: page,
+      pages: 1,
+      perPage: perPage,
+    );
   }
 
   void logRateLimits() {
@@ -139,79 +91,5 @@ class GithubManger {
       'rateLimitRemaining: ${gitI.rateLimitRemaining ?? 0}\n'
       'rateLimitReset: ${gitI.rateLimitReset ?? 0}',
     );
-  }
-
-// Future<DisplayRelease> getReleaseTag({
-//   required RepositorySlug slug,
-//   required IRepo repo,
-//   required Tag tag,
-// }) async {
-//   final release = await gitI.repositories.getReleaseById(slug, tag);
-//
-//   if (release.assets == null) {
-//     logger.w('No assets found for tag:${release.id}');
-//     return DisplayRelease(
-//       release: release,
-//       assets: null,
-//     );
-//   }
-//
-//   return DisplayRelease(
-//     release: release,
-//     assets: repo.filterReleases(release),
-//   );
-// }
-
-// RepositorySlug generateRepoSlug(String link) {
-//   final url = Uri.parse(link);
-//   final pathList = url.pathSegments;
-//   final user = pathList[pathList.length - 2];
-//   final repo = pathList.last;
-//   return RepositorySlug(user, repo);
-// }
-
-// TODO convert to StreamNotifier when docs are completed.
-// Stream<DisplayRelease> getReleases(IRepo repo) async* {
-//   final slug = RepositorySlug(
-//     repo.repoOwner,
-//     repo.repoName,
-//   );
-//
-//   final release = await gitI.repositories.getLatestRelease(slug);
-//
-//   if (release.assets == null) {
-//     logger.w('No assets found for tag:${release.id}');
-//     yield DisplayRelease(
-//       release: release,
-//       assets: null,
-//     );
-//   }
-//
-//   // send the latest release then send remaining tags
-//   yield DisplayRelease(
-//     release: release,
-//     assets: repo.filterReleases(release),
-//   );
-//
-//   if (release.id != null) {
-//                   // skip the latest release
-//     for (var x = release.id! - 1; x > release.id! - 5; x--) {
-//       yield await getReleaseTag(slug: slug, repo: repo, tag: x);
-//     }
-//   }
-// }
-}
-
-class CustomHttpClient extends http.BaseClient {
-  CustomHttpClient(this._inner, this._defaultHeaders);
-
-  final http.Client _inner;
-  final Map<String, String> _defaultHeaders;
-
-  @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) {
-    request.headers.addAll(_defaultHeaders);
-    logger.d(request);
-    return _inner.send(request);
   }
 }

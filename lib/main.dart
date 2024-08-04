@@ -61,7 +61,7 @@ class App extends ConsumerWidget {
     }
 
     return const Text(
-      'You have discovered a unhandled case, Congratulations!!, please report this on github.dart',
+      'You have discovered a unhandled case, Congratulations!!, please report this on release_provider.dart',
     );
   }
 }

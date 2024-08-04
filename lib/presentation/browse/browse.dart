@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rnr/database/models/display_release.dart';
-import 'package:rnr/providers/github.dart';
+import 'package:rnr/providers/release_provider.dart';
 import 'package:rnr/repos/repo_list.dart';
 import 'package:rnr/utils/services.dart';
 
@@ -70,18 +70,37 @@ class ReleaseList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repoIndex = ref.watch(repoIndexProvider);
-
     final repo = ref.watch(repoProvider(repoList[repoIndex]));
 
+    final fullListLength = repo.length + 1;
     return ListView.builder(
-      itemCount: repo.length,
-      itemBuilder: (context, index) => AppView(release: repo[index]),
+      itemCount: fullListLength,
+      itemBuilder: (context, index) => fullListLength - 1 == index
+          ? const FetchMoreFooter()
+          : AppView(release: repo[index]),
     );
 
     //     git.logRateLimits();
     //     return Text('Something went went wrong: $error');
     //     return const CircularProgressIndicator();
+  }
+}
 
+class FetchMoreFooter extends ConsumerWidget {
+  const FetchMoreFooter({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final repoIndex = ref.watch(repoIndexProvider);
+
+
+
+    return ElevatedButton(
+      onPressed: () {
+        ref.read(repoProvider(repoList[repoIndex]).notifier).fetchMore();
+      },
+      child: const Text('Fetch more tags'),
+    );
   }
 }
 

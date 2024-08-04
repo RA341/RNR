@@ -1,5 +1,5 @@
 name: rnr
-description: "Install revanced apps straight from github.dart."
+description: "Install revanced apps straight from release_provider.dart."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
