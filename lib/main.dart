@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rnr/presentation/setup/setup.dart';
-import 'package:rnr/providers/bottomnav.dart';
-import 'package:rnr/providers/settings.dart';
+import 'package:rnr/providers/bottomnav_provider.dart';
+import 'package:rnr/providers/settings_provider.dart';
 import 'package:rnr/services/github.dart';
 import 'package:rnr/services/permission_manager.dart';
 import 'package:rnr/utils/services.dart';
@@ -61,7 +61,7 @@ class App extends ConsumerWidget {
     }
 
     return const Text(
-      'You have discovered a unhandled case, Congratulations!!, please report this on release_provider.dart',
+      'You have discovered a unhandled case, Congratulations!!, please report this on github.dart',
     );
   }
 }
