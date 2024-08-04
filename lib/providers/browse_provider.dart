@@ -8,6 +8,8 @@ import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/utils/services.dart';
 
+final repoIndexProvider = StateProvider<int>((ref) => 0);
+
 final repoProvider = StateNotifierProvider.family<GithubReleaseNotifierS,
     List<DisplayRelease>, IRepo>(
   (ref, arg) {
@@ -27,6 +29,12 @@ class GithubReleaseNotifierS extends StateNotifier<List<DisplayRelease>> {
 
   Future<void> fetchMore() async {
     _listenToReleaseStream(_page++);
+  }
+
+  @override
+  void dispose() {
+    _page = 1;
+    super.dispose();
   }
 
   void _listenToReleaseStream(int page) {
