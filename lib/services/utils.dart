@@ -1,7 +1,7 @@
 // import 'package:device_info_plus/device_info_plus.dart';
-// import 'package:release_provider.dart/release_provider.dart.dart';
+// import 'package:browse_provider.dart/browse_provider.dart.dart';
 // import 'package:rnr/services/file_manager.dart';
-// import 'package:rnr/services/release_provider.dart.dart';
+// import 'package:rnr/services/browse_provider.dart.dart';
 //
 // class DeviceManager {
 //   DeviceManager._();
