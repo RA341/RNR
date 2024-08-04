@@ -29,13 +29,15 @@ class GithubReleaseNotifierS extends StateNotifier<List<DisplayRelease>> {
   bool isLoading = false;
 
   Future<void> fetchMore() async {
-    _listenToReleaseStream(_page++);
-    if (!isLoading) {}
+    if (!isLoading) {
+      _listenToReleaseStream(_page++);
+    }
   }
 
   @override
   void dispose() {
     _page = 1;
+    print('disposering');
     super.dispose();
   }
 
@@ -51,7 +53,6 @@ class GithubReleaseNotifierS extends StateNotifier<List<DisplayRelease>> {
       },
       onDone: () {
         isLoading = false;
-        print('stream is donw');
       },
     );
   }

@@ -28,7 +28,8 @@ class GithubManger {
     return (gitI.rateLimitRemaining, gitI.rateLimitLimit, gitI.rateLimitReset);
   }
 
-  Stream<DisplayRelease> getReleases(IRepo repo, {
+  Stream<DisplayRelease> getReleases(
+    IRepo repo, {
     int page = 1,
     int perPage = 3,
   }) async* {
@@ -37,12 +38,15 @@ class GithubManger {
       repo.repoName,
     );
 
-    await for (final tag in collectTags(slug, page, perPage: perPage)) {
+    final releases = git.gitI.listReleasesWithPagination(
+      slug,
+      page: page,
+      perPage: perPage,
+    );
+
+    await for (final release in releases) {
       logRateLimits();
       try {
-        final release =
-        await gitI.repositories.getReleaseByTagName(slug, tag.name);
-
         if (release.assets == null) {
           logger.w('No assets found for tag:${release.id}');
           yield DisplayRelease(
@@ -69,19 +73,20 @@ class GithubManger {
         }
       } catch (e) {
         logger.e(
-          'Failed to get release ${tag.name}: ${tag.commit}',
+          'Failed to get release {tag.name}: {tag.commit}',
           error: e,
         );
 
-        yield* Stream.error('Failed to get release ${tag.name}');
+        yield* Stream.error('Failed to get release {tag.name}');
       }
     }
   }
 
-  Stream<Tag> collectTags(RepositorySlug slug,
-      int page, {
-        int perPage = 3,
-      }) async* {
+  Stream<Tag> collectTags(
+    RepositorySlug slug,
+    int page, {
+    int perPage = 3,
+  }) async* {
     // VERY IMPORTANT ALWAYS PASS IN THE PAGES ARG ELSE IT WILL FETCH ALL PAGES
     yield* gitI.repositories.listTags(
       slug,
@@ -94,8 +99,30 @@ class GithubManger {
   void logRateLimits() {
     logger.i(
       'rateLimitLimit: ${gitI.rateLimitLimit ?? 0}\n'
-          'rateLimitRemaining: ${gitI.rateLimitRemaining ?? 0}\n'
-          'rateLimitReset: ${gitI.rateLimitReset ?? 0}',
+      'rateLimitRemaining: ${gitI.rateLimitRemaining ?? 0}\n'
+      'rateLimitReset: ${gitI.rateLimitReset ?? 0}',
+    );
+  }
+}
+
+extension ListReleasesWithPagination on GitHub {
+  /// Lists releases for the specified
+  /// repository, with pagination since the package does not support pagination
+  /// API docs: https://developer.github.com/v3/repos/releases/#list-releases-for-a-repository
+  Stream<Release> listReleasesWithPagination(
+    RepositorySlug slug, {
+    int page = 1,
+    int perPage = 3,
+    int pages = 1,
+  }) {
+    ArgumentError.checkNotNull(slug);
+    return PaginationHelper(this.git.github)
+        .objects<Map<String, dynamic>, Release>(
+      'GET',
+      '/repos/${slug.fullName}/releases',
+      Release.fromJson,
+      pages: pages,
+      params: {'page': page, 'per_page': perPage},
     );
   }
 }

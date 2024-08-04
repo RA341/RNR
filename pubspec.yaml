@@ -2,7 +2,7 @@ name: rnr
 description: "Install revanced apps straight from browse_provider.dart."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 0.1.0+1
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
@@ -44,6 +44,8 @@ dependencies:
   flutter_dotenv:
   url_launcher: ^6.3.0
   timeago: ^3.7.0
+  flutter_markdown: ^0.7.3
+  flutter_animate:
   # database
   shared_preferences:
 

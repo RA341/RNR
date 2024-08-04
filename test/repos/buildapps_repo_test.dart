@@ -15,7 +15,6 @@ void main() {
       );
 
       final repo = BuildApps();
-
       final slug = RepositorySlug(repo.repoOwner, repo.repoName);
       final releases = await git.repositories.getLatestRelease(slug);
 

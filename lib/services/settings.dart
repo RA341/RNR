@@ -6,20 +6,20 @@ class SettingsManager {
 
   final SharedPreferences prefs;
 
-  bool isFirstInstall() {
-    try {
-      final res = prefs.getBool('first_install')!;
-      return !res;
-    } catch (e) {
-      logger.e('Failed to check "first_install" key in shared prefs', error: e);
-      return true;
-    }
+  bool isGmsEnabled() {
+    return prefs.getBool(SettingsKeys.gmsCore) ?? false;
   }
 
-  String? getGithubToken() => prefs.getString('github_pat');
+  Future<void> toggleGmsCore({required bool value}) async {
+    await prefs.setBool(SettingsKeys.gmsCore, value);
+    await prefs.reload();
+  }
+
+
+  String? getGithubToken() => prefs.getString(SettingsKeys.githubPat);
 
   Future<void> clearGithubToken() async {
-    await prefs.remove('github_pat');
+    await prefs.remove(SettingsKeys.githubPat);
     await prefs.reload();
     if (getI.isRegistered(instance: git)) {
       getI.resetLazySingleton(
@@ -33,7 +33,7 @@ class SettingsManager {
   }
 
   Future<void> updateGithubToken(String accessToken) async {
-    await prefs.setString('github_pat', accessToken);
+    await prefs.setString(SettingsKeys.githubPat, accessToken);
     await prefs.reload();
     if (getI.isRegistered(instance: git)) {
       getI.resetLazySingleton(
@@ -46,4 +46,9 @@ class SettingsManager {
       );
     }
   }
+}
+
+class SettingsKeys {
+  static const githubPat = 'github_pat';
+  static const gmsCore = 'gmscore';
 }

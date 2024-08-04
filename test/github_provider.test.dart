@@ -1,61 +1,36 @@
-// import 'package:riverpod/riverpod.dart';
-// import 'package:rnr/providers/browse_provider.dart';
-// import 'package:rnr/repos/sources/revancedapks.buildapps.dart';
-// import 'package:test/test.dart';
-//
-// /// A testing utility which creates a [ProviderContainer] and automatically
-// /// disposes it at the end of the test.
-// ProviderContainer createContainer({
-//   ProviderContainer? parent,
-//   List<Override> overrides = const [],
-//   List<ProviderObserver>? observers,
-// }) {
-//   // Create a ProviderContainer, and optionally allow specifying parameters.
-//   final container = ProviderContainer(
-//     parent: parent,
-//     overrides: overrides,
-//     observers: observers,
-//   );
-//
-//   // When the test ends, dispose the container.
-//   addTearDown(container.dispose);
-//
-//   return container;
-// }
-//
-// void main() {
-//   test('Some description', () async {
-//     final container = createContainer();
-//     final repo = BuildApps();
-//
-//     container.read(repoProvider(repo))
-//       .when(
-//         data: (data) {
-//           for (var element in data) {
-//             print(element.release.name);
-//             print(element.assets?.length);
-//             element.assets?.forEach(
-//               (element) {
-//                 print(element.name);
-//               },
-//             );
-//           }
-//         },
-//         error: (error, stackTrace) {
-//           print(error);
-//         },
-//         loading: () {
-//           print('Loading');
-//         },
-//       );
-//
-//     container.read(repoProvider(repo).notifier).fetchMore();
-//
-//     final f = await container.read(repoProvider(repo).future);
-//
-//     expect(
-//       f.length,
-//       equals(10),
-//     );
-//   });
-// }
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:github/github.dart';
+import 'package:riverpod/riverpod.dart';
+import 'package:rnr/providers/browse_provider.dart';
+import 'package:rnr/repos/sources/Revanced.GmsCore.dart';
+import 'package:rnr/repos/sources/revancedapks.buildapps.dart';
+import 'package:rnr/services/github.dart';
+import 'package:test/test.dart';
+
+void main() {
+  test(
+    'Some description',
+    () async {
+      await dotenv.load();
+      final git = GitHub(
+        auth: Authentication.bearerToken(
+          dotenv.get('GITHUB_TEST_PAT'),
+        ),
+      );
+
+      final repo = GmsCore();
+      final slug = RepositorySlug(repo.repoOwner, repo.repoName);
+
+      final s = await git.listReleasesWithPagination(slug).toList();
+
+      final s2 = await git.listReleasesWithPagination(slug, page: 2).toList();
+      final s3 = await git.listReleasesWithPagination(slug, page: 3).toList();
+
+      print(s);
+      //
+      // await for (final rel in s) {
+      //   print(rel.name);
+      // }
+    },
+  );
+}

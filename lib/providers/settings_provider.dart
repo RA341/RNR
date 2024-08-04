@@ -4,6 +4,3 @@ import 'package:rnr/utils/services.dart';
 import 'package:rnr/services/settings.dart';
 
 
-final settingsExistsProvider = FutureProvider<bool>((ref) async {
-  return settings.isFirstInstall();
-});

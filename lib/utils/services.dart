@@ -7,6 +7,7 @@ import 'package:logger/logger.dart';
 import 'package:rnr/presentation/settings/settings.dart';
 import 'package:rnr/services/github.dart';
 import 'package:rnr/services/settings.dart';
+import 'package:rnr/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final getI = GetIt.instance;

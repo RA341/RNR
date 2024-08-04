@@ -37,35 +37,6 @@ class RNR extends StatelessWidget {
   }
 }
 
-class App extends ConsumerWidget {
-  const App({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final firstInstall = ref.watch(settingsExistsProvider);
-
-    if (firstInstall.isLoading || firstInstall.isRefreshing) {
-      return const Scaffold(body: CircularProgressIndicator());
-    }
-
-    if (firstInstall.hasError) {
-      return Scaffold(
-        body: Text(
-          'Whoops something went wrong\n\n${firstInstall.error}',
-        ),
-      );
-    }
-
-    if (firstInstall.hasValue) {
-      return const Root();
-    }
-
-    return const Text(
-      'You have discovered a unhandled case, Congratulations!!, please report this on github.dart',
-    );
-  }
-}
-
 class Root extends ConsumerWidget {
   const Root({super.key});
 
@@ -105,3 +76,33 @@ class Root extends ConsumerWidget {
     );
   }
 }
+
+//
+// class App extends ConsumerWidget {
+//   const App({super.key});
+//
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final firstInstall = ref.watch(settingsExistsProvider);
+//
+//     if (firstInstall.isLoading || firstInstall.isRefreshing) {
+//       return const Scaffold(body: CircularProgressIndicator());
+//     }
+//
+//     if (firstInstall.hasError) {
+//       return Scaffold(
+//         body: Text(
+//           'Whoops something went wrong\n\n${firstInstall.error}',
+//         ),
+//       );
+//     }
+//
+//     if (firstInstall.hasValue) {
+//       return const Root();
+//     }
+//
+//     return const Text(
+//       'You have discovered a unhandled case, Congratulations!!, please report this on github.dart',
+//     );
+//   }
+// }
