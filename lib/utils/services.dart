@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:github/github.dart';
 import 'package:logger/logger.dart';
 import 'package:rnr/presentation/settings/settings.dart';
+import 'package:rnr/services/app_manager.dart';
 import 'package:rnr/services/github.dart';
 import 'package:rnr/services/settings.dart';
 import 'package:rnr/utils/utils.dart';

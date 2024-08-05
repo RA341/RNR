@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rnr/presentation/setup/setup.dart';
-import 'package:rnr/providers/bottomnav_provider.dart';
+import 'package:rnr/providers/navigation_provider.dart';
 import 'package:rnr/providers/settings_provider.dart';
 import 'package:rnr/services/github.dart';
 import 'package:rnr/services/permission_manager.dart';

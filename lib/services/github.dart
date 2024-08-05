@@ -4,6 +4,8 @@ import 'package:rnr/database/models/display_release.dart';
 import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/utils/services.dart';
 
+final git = GithubManger.i;
+
 class GithubManger {
   GithubManger._() {
     final tk = settings.getGithubToken();
