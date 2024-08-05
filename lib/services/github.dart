@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:github/github.dart';
-import 'package:rnr/database/models/display_release.dart';
+import 'package:rnr/models/display_release.dart';
 import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/utils/services.dart';
 

@@ -2,8 +2,8 @@
 // import 'package:device_apps/device_apps.dart';
 // import 'package:flutter/foundation.dart';
 // import 'package:isar/isar.dart';
-// import 'package:rnr/models/display_app.dart.dart';
-// import 'package:rnr/models/installed_app.dart';
+// import 'package:rnr/models/display_app_store.dart.dart';
+// import 'package:rnr/models/installed_app_store.dart';
 // import 'package:rnr/services/file_manager.dart';
 //
 // final appMan = AppManager.i;

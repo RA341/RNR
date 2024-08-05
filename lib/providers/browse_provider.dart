@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rnr/database/models/display_app.dart';
-import 'package:rnr/database/models/display_release.dart';
+import 'package:rnr/models/display_release.dart';
 import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/utils/services.dart';

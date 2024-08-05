@@ -4,6 +4,7 @@ library;
 import 'package:get_it/get_it.dart';
 import 'package:github/github.dart';
 import 'package:logger/logger.dart';
+import 'package:rnr/database/database.dart';
 import 'package:rnr/presentation/settings/settings.dart';
 import 'package:rnr/services/app_manager.dart';
 import 'package:rnr/services/github.dart';
@@ -28,6 +29,8 @@ Future<void> initServices() async {
     ),
   );
   reg<Logger>(() => logger);
+
+  reg<AppDatabase>(AppDatabase.new);
 
   final prefs = await SharedPreferences.getInstance();
   reg<SettingsManager>(() => SettingsManager(prefs));

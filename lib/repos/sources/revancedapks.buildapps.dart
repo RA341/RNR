@@ -1,5 +1,5 @@
 import 'package:github/github.dart';
-import 'package:rnr/database/models/display_app.dart';
+import 'package:rnr/models/display_app.dart';
 import 'package:rnr/repos/irepo.dart';
 
 class BuildApps extends IRepo {

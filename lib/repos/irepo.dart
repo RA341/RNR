@@ -1,5 +1,5 @@
 import 'package:github/github.dart';
-import 'package:rnr/database/models/display_app.dart';
+import 'package:rnr/models/display_app.dart';
 
 abstract class IRepo {
   String get repoOwner;
@@ -9,7 +9,6 @@ abstract class IRepo {
   List<DisplayApp> filterReleases(Release release);
 
   @override
-
   @override
   bool operator ==(Object other) {
     return other is IRepo &&
