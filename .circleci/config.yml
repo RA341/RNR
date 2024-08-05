@@ -55,7 +55,7 @@ workflows:
               only: [ "main", "beta" ]
 #          requires:
 #            - analyze_and_test
-      - build_android_l:
+      - build_android:
           filters:
             branches:
               only: [ "main", "beta" ]

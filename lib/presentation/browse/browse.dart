@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rnr/utils/services.dart';
-import 'package:timeago/timeago.dart' as timeago;
-import 'package:rnr/database/models/display_release.dart';
+import 'package:rnr/models/display_release.dart';
 import 'package:rnr/presentation/browse/browse_header.dart';
 import 'package:rnr/providers/browse_provider.dart';
 import 'package:rnr/repos/repo_list.dart';
+import 'package:rnr/utils/services.dart';
 import 'package:rnr/utils/utils.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
 class BrowsePage extends StatelessWidget {

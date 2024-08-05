@@ -4,13 +4,14 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:rnr/database/db/display_app_store.dart';
-import 'package:rnr/database/db/installed_app_store.dart';
-import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
+import 'package:rnr/database/store/display_app_store.dart';
+import 'package:rnr/database/store/installed_app_store.dart';
 import 'package:sqlite3/sqlite3.dart';
+import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
+
 part 'database.g.dart';
 
-@DriftDatabase(tables: [InstalledAppsStore, ])
+@DriftDatabase(tables: [InstalledAppStore, DisplayAppStore])
 class AppDatabase extends _$AppDatabase {
   // After generating code, this class needs to define a `schemaVersion` getter
   // and a constructor telling drift where the database should be stored.
@@ -19,11 +20,6 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 1;
-
-  void f () {
-    final d = DisplayApp();
-
-  }
 
   static LazyDatabase _openConnection() {
     // the LazyDatabase util lets us find the right location for the file async.
