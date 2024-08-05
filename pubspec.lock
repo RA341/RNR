@@ -250,15 +250,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.6"
-  device_apps:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "733e00bb96c23478d6416ed786e99cdc7803da66"
-      url: "https://github.com/BenjaminHalko/flutter_plugin_device_apps"
-    source: git
-    version: "2.2.0"
   device_info_plus:
     dependency: "direct main"
     description:
@@ -490,6 +481,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  installed_apps:
+    dependency: "direct main"
+    description:
+      name: installed_apps
+      sha256: b4db1c5a74fbedb2d782f734878e84b156673b332f45a4db71048df5d565f13d
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.0"
   intl:
     dependency: transitive
     description:
