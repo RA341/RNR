@@ -40,13 +40,13 @@ try {
         const remoteUrl = gitCommand('config --get remote.origin.url');
         console.log(`Remote URL: ${remoteUrl}`);
 
+        // Push the changes to the remote repository
+        gitCommand('config user.name "Pubspec-bot"');
+        gitCommand('config user.email "pubspec@bot.com"');
         // Add the pubspec.yaml file to the Git staging area
         gitCommand('add pubspec.yaml');
         // Commit the changes with a message
         gitCommand('commit -m "chore: Update pubspec.yaml version"');
-        // Push the changes to the remote repository
-        gitCommand('config user.name "Release-bot"');
-        gitCommand('config user.email "release@bot.com"');
         gitCommand(`push https://${accessToken}@${remoteUrl.subarray(remoteUrl.indexOf(':') + 3)}`);
 
         console.log('Successfully pushed the changes to the remote repository.');
