@@ -3,7 +3,8 @@ const fs = require('fs');
 
 const gitCommand = (command) => {
     try {
-        return execSync(`git ${command}`, {stdio: 'inherit'});
+        const f = execSync(`git ${command}`, { encoding: 'utf8' }).trim();
+        return f;
     } catch (error) {
         console.error(`Git command "${command}" failed with error:`);
         console.error(error);
