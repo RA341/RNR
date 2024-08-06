@@ -36,7 +36,6 @@ class GithubReleaseNotifierS extends StateNotifier<List<DisplayRelease>> {
   @override
   void dispose() {
     _page = 1;
-    print('disposering');
     super.dispose();
   }
 
