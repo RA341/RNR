@@ -1,3 +1,4 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:rnr/utils/services.dart';
 
@@ -22,5 +23,24 @@ Future<bool> testToken(String token) async {
   } catch (e) {
     logger.e(e);
     return false;
+  }
+}
+
+class DeviceManager {
+  DeviceManager._();
+
+  static DeviceManager get i => _dev ??= DeviceManager._();
+
+  static DeviceManager? _dev;
+
+  String? supportedArch;
+
+  Future<void> getDeviceInfo() async {
+    final info = DeviceInfoPlugin();
+    final androidInfo = await info.androidInfo;
+
+    // get the supported arch
+    // eg [arm64-v8a] -> v8a
+    supportedArch = androidInfo.supported64BitAbis[0].split('-')[0];
   }
 }
