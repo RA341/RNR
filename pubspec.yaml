@@ -2,7 +2,7 @@ name: rnr
 description: "Install revanced apps straight from browse_provider.dart."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0
+version: 1.1.0
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
