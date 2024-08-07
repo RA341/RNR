@@ -10,7 +10,6 @@ try {
         } catch (error) {
             console.error(`Git command "${command}" failed with error:`);
             console.error(error);
-            process.exit(1);
             return null
         }
     };
