@@ -6,6 +6,8 @@ import 'package:rnr/utils/services.dart';
 
 final fileMan = FileManager.i;
 
+
+
 class FileManager {
   FileManager._();
 
@@ -21,7 +23,7 @@ class FileManager {
     downloads = (await getDownloadsDirectory())!;
   }
 
-  Uri getFilePath(String appName) => Uri.file('${downloads.path}/$appName');
+  Uri generateDownloadPath(String appName) => Uri.file('${downloads.path}/$appName');
 
   Future<void> deleteApk(
     Uri filePath,
@@ -35,14 +37,14 @@ class FileManager {
   }
 
   Future<void> downloadApk(
-    String fileName,
+    String filePath,
     String uri,
     void Function(int, int)? onReceiveProgress,
     CancelToken cancel,
   ) async {
     await dio.download(
       uri,
-      '${downloads.path}/$fileName',
+      filePath,
       onReceiveProgress: onReceiveProgress,
       cancelToken: cancel,
     );

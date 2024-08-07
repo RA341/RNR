@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rnr/models/display_release.dart';
 import 'package:rnr/presentation/browse/browse_header.dart';
+import 'package:rnr/presentation/shared/error_widget.dart';
 import 'package:rnr/providers/browse_provider.dart';
 import 'package:rnr/repos/repo_list.dart';
+import 'package:rnr/services/source_manager.dart';
 import 'package:rnr/utils/services.dart';
 import 'package:rnr/utils/utils.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -41,19 +42,12 @@ class ReleaseList extends ConsumerWidget {
     return ListView.builder(
       itemCount: fullListLength,
       itemBuilder: (context, index) => fullListLength - 1 == index
-          ? const Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: 20,
-                horizontal: 75,
-              ),
-              child: FetchMoreFooter(),
-            )
-          : ReleaseView(rel: repo[index]),
+          ? const FetchMoreFooter()
+          : ReleaseView(
+              rel: repo[index],
+              expandAssets: index == 0, // expand the latest result
+            ),
     );
-    // TODO handling error when stream goes down
-    //     git.logRateLimits();
-    //     return Text('Something went went wrong: $error');
-    //     return const CircularProgressIndicator();
   }
 }
 
@@ -64,64 +58,97 @@ class FetchMoreFooter extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final repoIndex = ref.watch(repoIndexProvider);
 
-    return ref.read(repoProvider(repoList[repoIndex]).notifier).isLoading
-        ? const Center(
-            child: SizedBox(
-              height: 50,
-              width: 50,
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : ElevatedButton(
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: 50,
+      ),
+      child: switch (
+          ref.read(repoProvider(repoList[repoIndex]).notifier).fetchState) {
+        FetchState.error => AppErrorWidget(
+            headerText:
+                'Error occurred while fetching releases. Try refreshing again',
+            errText: ref
+                .read(repoProvider(repoList[repoIndex]).notifier)
+                .errM
+                .toString(),
+          ),
+        FetchState.idle => ElevatedButton(
             onPressed:
                 ref.read(repoProvider(repoList[repoIndex]).notifier).fetchMore,
             child: const Text(
               'Fetch more releases',
               style: TextStyle(fontSize: 16),
             ),
-          );
+          ),
+        FetchState.loading => const Center(
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: CircularProgressIndicator(),
+            ),
+          ),
+      },
+    );
   }
 }
 
 class ReleaseView extends ConsumerWidget {
   const ReleaseView({
     required this.rel,
+    this.expandAssets = false,
     super.key,
   });
 
   final DisplayRelease rel;
+  final bool expandAssets;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final releaseDate = rel.release.createdAt;
+    final releaseDate = rel.release.publishedAt ?? rel.release.createdAt;
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.deepPurple,
+          borderRadius: BorderRadius.all(
+            Radius.circular(15),
+          ),
+        ),
+        child: Column(
           children: [
-            Text(rel.release.name ?? 'No release name'),
-            if (releaseDate != null)
-              Text('Released ${timeago.format(
-                releaseDate,
-                locale: 'en_short',
-              )} ago'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(rel.release.name ?? 'No release name'),
+                if (releaseDate != null || releaseDate!.year == 69)
+                  Text('Released ${timeago.format(
+                    releaseDate,
+                    locale: 'en_short',
+                  )} ago'),
+              ],
+            ),
+            ActionButtons(
+              rel: rel,
+              expandAssets: expandAssets,
+            ),
           ],
         ),
-        ActionButtons(rel: rel),
-      ],
+      ),
     );
-  }
-
-  void downloadAndInstall(String url) {
-    print('downloading $url');
   }
 }
 
 class ActionButtons extends ConsumerStatefulWidget {
-  const ActionButtons({required this.rel, super.key});
+  const ActionButtons({
+    required this.rel,
+    this.expandAssets = false,
+    super.key,
+  });
 
   final DisplayRelease rel;
+  final bool expandAssets;
 
   @override
   ConsumerState createState() => _ActionButtonsState();
@@ -135,8 +162,13 @@ class _ActionButtonsState extends ConsumerState<ActionButtons>
   void initState() {
     assetAnimController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 150),
     );
+
+    if (showAssets) {
+      assetAnimController.forward();
+    }
+
     super.initState();
   }
 
@@ -146,9 +178,19 @@ class _ActionButtonsState extends ConsumerState<ActionButtons>
     super.dispose();
   }
 
+  void _expandAssets() {
+    showAssets = !showAssets;
+    if (showAssets) {
+      assetAnimController.forward();
+    } else {
+      assetAnimController.reverse();
+    }
+    setState(() {});
+  }
+
   late final AnimationController assetAnimController;
 
-  bool showAssets = false;
+  late bool showAssets = widget.expandAssets;
 
   @override
   Widget build(BuildContext context) {
@@ -161,17 +203,11 @@ class _ActionButtonsState extends ConsumerState<ActionButtons>
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              onPressed: () async {
-                setState(() {
-                  showAssets = !showAssets;
-                  if (showAssets) {
-                    assetAnimController.forward(from: 100);
-                  } else {
-                    assetAnimController.reverse(from: 100);
-                  }
-                });
-              },
-              icon: const Icon(Icons.list_outlined),
+              onPressed: _expandAssets,
+              icon: AnimatedIcon(
+                icon: AnimatedIcons.menu_close,
+                progress: assetAnimController,
+              ),
               tooltip: 'assets',
             ),
             if (releaseUrl != null)
@@ -182,7 +218,7 @@ class _ActionButtonsState extends ConsumerState<ActionButtons>
                     logger.e('Could not launch $url');
                   }
                 },
-                icon: const Icon(Icons.link_sharp),
+                icon: const Icon(Icons.open_in_new_rounded),
                 tooltip: 'Release url',
               ),
             IconButton(
@@ -198,22 +234,19 @@ class _ActionButtonsState extends ConsumerState<ActionButtons>
                   },
                 );
               },
-              icon: const Icon(Icons.read_more),
+              icon: const Icon(Icons.edit_note_sharp),
               tooltip: 'Readme',
             ),
           ],
         ),
-        if (showAssets)
-          AssetBuilder(rel: rel)
-              .animate(controller: assetAnimController)
-              .moveY(),
+        if (showAssets) AssetView(rel: rel),
       ],
     );
   }
 }
 
-class AssetBuilder extends ConsumerWidget {
-  const AssetBuilder({required this.rel, super.key});
+class AssetView extends ConsumerWidget {
+  const AssetView({required this.rel, super.key});
 
   final DisplayRelease rel;
 
@@ -226,29 +259,42 @@ class AssetBuilder extends ConsumerWidget {
       child: Column(
         children: assets
             .map(
-              (asset) => Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+              (asset) => Padding(
+                padding: const EdgeInsets.all(10),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.blueAccent,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(15),
+                    ),
+                  ),
+                  child: Column(
                     children: [
-                      Text(asset.name),
-                      Text(asset.version),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(asset.name),
+                          Text(asset.version),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text('Arch: ${asset.arch}'),
+                          Text(
+                            '${convertBytes(asset.size).toStringAsPrecision(4)} MB',
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              sourceMan.installNewApp(rel.release, asset);
+                            },
+                            icon: const Icon(Icons.download),
+                          ),
+                        ],
+                      )
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text('Arch: ${asset.arch}'),
-                      Text(
-                        '${convertBytes(asset.size).toStringAsPrecision(4)} MB',
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.download),
-                      ),
-                    ],
-                  )
-                ],
+                ),
               ),
             )
             .toList(),

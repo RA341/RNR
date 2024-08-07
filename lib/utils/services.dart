@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:rnr/database/database.dart';
 import 'package:rnr/presentation/settings/settings.dart';
 import 'package:rnr/services/app_manager.dart';
+import 'package:rnr/services/file_manager.dart';
 import 'package:rnr/services/github.dart';
 import 'package:rnr/services/settings.dart';
 import 'package:rnr/utils/utils.dart';
@@ -46,6 +47,9 @@ Future<void> initServices() async {
 
   final prefs = await SharedPreferences.getInstance();
   reg<SettingsManager>(() => SettingsManager(prefs));
+
+  // file manager init
+  await fileMan.init();
 
   if (git.gitI.auth.bearerToken != null &&
       !await testToken(git.gitI.auth.bearerToken!)) {
