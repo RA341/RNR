@@ -1,19 +1,20 @@
 const {execSync} = require('child_process');
 const fs = require('fs');
 
-const gitCommand = (command) => {
-    try {
-        const f = execSync(`git ${command}`, {encoding: 'utf8'}).trim();
-        return f;
-    } catch (error) {
-        console.error(`Git command "${command}" failed with error:`);
-        console.error(error);
-        process.exit(1);
-        return null
-    }
-};
 
 try {
+    const gitCommand = (command) => {
+        try {
+            const f = execSync(`git ${command}`, {encoding: 'utf8'}).trim();
+            return f;
+        } catch (error) {
+            console.error(`Git command "${command}" failed with error:`);
+            console.error(error);
+            process.exit(1);
+            return null
+        }
+    };
+
     // Get the current branch name
     const branch = execSync('git rev-parse --abbrev-ref HEAD', {encoding: 'utf8'}).trim();
     // Get the latest version tag for the current branch
