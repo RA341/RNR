@@ -24,7 +24,7 @@ class _GithubPatInputState extends State<GithubPatInput> {
     super.dispose();
   }
 
-  var reqState = false;
+  bool reqState = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,46 +37,71 @@ class _GithubPatInputState extends State<GithubPatInput> {
             width: double.maxFinite,
             child: TextField(
               controller: githubTokenController,
+              obscureText: true,
+              autofillHints: const [AutofillHints.password],
             ),
           ),
         ),
-        ElevatedButton(
-          onPressed: () async {
-            updateState(true);
-            final token = githubTokenController.text;
-            if (await testToken(token)) {
-              await settings.updateGithubToken(token);
-              updateState(false);
-              return;
-            }
-
-            updateState(false);
-            if (!context.mounted) return;
-            await showDialog<void>(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Error verifying Github token!'),
-                  content: const Text(
-                    'The github token was incorrect, verify it and try again',
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton(
+              onPressed: updateToken,
+              child: reqState
+                  ? const CircularProgressIndicator()
+                  : const Text('Update'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await settings.clearGithubToken();
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content:
+                        Text('Github token cleared!, APP RESTART IS REQUIRED'),
                   ),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('OK'),
-                    ),
-                  ],
                 );
               },
-            );
-          },
-          child: reqState
-              ? const CircularProgressIndicator()
-              : const Text('Update'),
+              child: const Text('Clear token'),
+            ),
+          ],
         ),
       ],
+    );
+  }
+
+  void updateToken() async {
+    updateState(true);
+    final token = githubTokenController.text;
+    if (await testToken(token)) {
+      try {
+        await settings.updateGithubToken(token);
+        githubTokenController.clear();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Github token updated!, APP RESTART IS REQUIRED'),
+          ),
+        );
+      } catch (e) {
+        if (!context.mounted) return;
+        await showAlert(
+          context,
+          'Error updating Github token!, try again',
+          'Something went wrong try again, if the issue persists open a issue on github'
+              '\n$e',
+        );
+        logger.e('Failed to write github token', error: e);
+      }
+      updateState(false);
+      return;
+    }
+
+    updateState(false);
+    if (!context.mounted) return;
+    await showAlert(
+      context,
+      'Error verifying Github token!',
+      'The github token was incorrect, verify it and try again',
     );
   }
 
@@ -85,4 +110,27 @@ class _GithubPatInputState extends State<GithubPatInput> {
       reqState = newState;
     });
   }
+}
+
+Future<void> showAlert(
+    BuildContext context, String headerText, String moreInfoText) async {
+  await showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(headerText),
+        content: Text(
+          moreInfoText,
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
 }
