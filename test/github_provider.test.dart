@@ -2,7 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:github/github.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:rnr/providers/browse_provider.dart';
-import 'package:rnr/repos/sources/Revanced.GmsCore.dart';
+import 'package:rnr/repos/sources/revanced.gmscore.dart';
 import 'package:rnr/repos/sources/revancedapks.buildapps.dart';
 import 'package:rnr/services/github.dart';
 import 'package:test/test.dart';
