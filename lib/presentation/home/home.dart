@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rnr/presentation/home/gmscore_widget.dart';
 import 'package:rnr/presentation/home/installed_apps.dart';
-import 'package:rnr/repos/sources/Revanced.GmsCore.dart';
 import 'package:rnr/utils/services.dart';
 
 class HomePage extends StatelessWidget {
