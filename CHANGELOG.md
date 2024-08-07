@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/RA341/RNR/compare/1.0.0...1.1.0) (2024-08-07)
+
+
+### Features
+
+* updated metadata scrapers ([67c95c4](https://github.com/RA341/RNR/commit/67c95c495a5f603cda91b17e9d0f09e33dcb43d8))
+
 # 1.0.0 (2024-08-07)
 
 
