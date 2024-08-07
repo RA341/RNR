@@ -21,6 +21,7 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 1;
 
+
   static LazyDatabase _openConnection() {
     // the LazyDatabase util lets us find the right location for the file async.
     return LazyDatabase(() async {

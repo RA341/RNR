@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const gitCommand = (command) => {
     try {
-        const f = execSync(`git ${command}`, { encoding: 'utf8' }).trim();
+        const f = execSync(`git ${command}`, {encoding: 'utf8'}).trim();
         return f;
     } catch (error) {
         console.error(`Git command "${command}" failed with error:`);
@@ -48,7 +48,10 @@ try {
         gitCommand('add pubspec.yaml');
         // Commit the changes with a message
         gitCommand('commit -m "chore: Update pubspec.yaml version"');
-        gitCommand(`push https://${accessToken}@${remoteUrl.subarray(remoteUrl.indexOf(':') + 3)}`);
+        const url = remoteUrl.subarray(remoteUrl.indexOf(':') + 3)
+
+        console.log(url)
+        gitCommand(`push https://${accessToken}@${url}`);
 
         console.log('Successfully pushed the changes to the remote repository.');
     } else {

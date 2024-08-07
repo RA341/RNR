@@ -1,23 +1,21 @@
 import 'dart:async';
-
-import 'package:flutter/foundation.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rnr/models/display_release.dart';
-import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/utils/services.dart';
 
 final repoIndexProvider = StateProvider<int>((ref) => 0);
 
-final repoProvider = StateNotifierProvider.family<GithubReleaseNotifierS,
+final repoProvider = StateNotifierProvider.family<GithubReleaseNotifier,
     List<DisplayRelease>, IRepo>(
   (ref, arg) {
-    return GithubReleaseNotifierS(arg);
+    return GithubReleaseNotifier(arg);
   },
 );
 
-class GithubReleaseNotifierS extends StateNotifier<List<DisplayRelease>> {
-  GithubReleaseNotifierS(this.repo) : super([]) {
+class GithubReleaseNotifier extends StateNotifier<List<DisplayRelease>> {
+  GithubReleaseNotifier(this.repo) : super([]) {
     _listenToReleaseStream(_page);
     _page++;
   }
@@ -25,10 +23,12 @@ class GithubReleaseNotifierS extends StateNotifier<List<DisplayRelease>> {
   final IRepo repo;
 
   int _page = 1;
-  bool isLoading = false;
+  FetchState fetchState = FetchState.idle;
+
+  Object? errM;
 
   Future<void> fetchMore() async {
-    if (!isLoading) {
+    if (fetchState == FetchState.idle) {
       _listenToReleaseStream(_page++);
     }
   }
@@ -36,23 +36,31 @@ class GithubReleaseNotifierS extends StateNotifier<List<DisplayRelease>> {
   @override
   void dispose() {
     _page = 1;
-    print('disposering');
     super.dispose();
   }
 
   void _listenToReleaseStream(int page) {
-    isLoading = true;
+    fetchState = FetchState.loading;
     git.getReleases(repo, page: page).listen(
       (event) {
         state = [...state, event];
       },
       onError: (Object err, StackTrace st) {
-        logger.e('Stream error',error: err,stackTrace: st);
-        isLoading = false;
+        logger.e('Stream error', error: err, stackTrace: st);
+        errM = err;
+        fetchState = FetchState.error;
       },
       onDone: () {
-        isLoading = false;
+        if (fetchState != FetchState.error) {
+          fetchState = FetchState.idle;
+        }
       },
     );
   }
+}
+
+enum FetchState {
+  idle,
+  loading,
+  error,
 }

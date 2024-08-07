@@ -40,7 +40,7 @@ class BrowseRepoHeader extends ConsumerWidget {
                   ref.invalidate(repoProvider(repoList[repoIndex]));
                 },
                 icon: const Icon(Icons.refresh),
-              )
+              ),
             ],
           ),
         ),

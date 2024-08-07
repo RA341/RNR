@@ -21,7 +21,7 @@ class AppManager {
   String? repoUrl;
 
   Future<void> installApk(Uri apkPath) async {
-    await ApkInstaller.installApk(filePath: apkPath.path);
+    return ApkInstaller.installApk(filePath: apkPath.path);
   }
 
 

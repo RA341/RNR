@@ -1,16 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rnr/presentation/setup/setup.dart';
+import 'package:open_file_plus/open_file_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rnr/providers/navigation_provider.dart';
-import 'package:rnr/providers/settings_provider.dart';
-import 'package:rnr/services/github.dart';
 import 'package:rnr/services/permission_manager.dart';
 import 'package:rnr/utils/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await initServices();
   await requestInstallPermissions();
+
   runApp(
     const ProviderScope(
       child: RNR(),
@@ -48,7 +51,11 @@ class Root extends ConsumerWidget {
       body: pages[index],
       floatingActionButton: IconButton(
         icon: const Icon(Icons.add),
-        onPressed: () {
+        onPressed: () async {
+          final extDir = await getExternalStorageDirectory();
+          final logFile =
+              await File('${extDir!.path}/rnr.log').create(recursive: true);
+          await OpenFile.open(logFile.path);
           // GithubManger.i.getReleases();
         },
       ),

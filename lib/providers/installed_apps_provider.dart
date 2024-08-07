@@ -38,7 +38,8 @@ List<AppInfo> searchApps(String query, List<AppInfo> apps) {
   final results = <AppInfo>[];
 
   for (final app in apps) {
-    if (app.packageName.contains(query) || app.name.contains(query)) {
+    if (app.packageName.toLowerCase().contains(query.toLowerCase()) ||
+        app.name.toLowerCase().contains(query.toLowerCase())) {
       results.add(app);
     }
   }
