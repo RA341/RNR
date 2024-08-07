@@ -38,17 +38,7 @@ class AppSourceManager {
         ..i('add the app manually');
     }
 
-    await appMan.installApk(savePath).onError(
-      (error, stackTrace) {
-        print(error);
-      },
-    ).then(
-      (value) {
-        print('app should be installed');
-      },
-    );
-
-    print('wow');
+    await appMan.installApk(savePath);
 
     logger.i('App $fileName installed, with packagename: $packageName');
 
@@ -58,6 +48,22 @@ class AppSourceManager {
     // install app
 
     // store to db
+
+
+    // delete apk
+    await fileMan.deleteApk(savePath).then(
+      (value) {
+        logger.d('deleted apk: ${savePath.path}');
+      },
+    ).onError(
+      (error, stackTrace) {
+        logger.e(
+          'Failed to delete apk: ${savePath.path}',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      },
+    );
   }
 
   void updateExistingApp(String packageName, Release release, DisplayApp app) {
