@@ -11,6 +11,7 @@ Future<bool> testToken(String token) async {
   };
   try {
     final res = await Dio()
+        // ignore: inference_failure_on_function_invocation
         .get('https://api.github.com/meta', options: Options(headers: headers));
 
     if (res.statusCode != 200) {

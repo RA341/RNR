@@ -1,4 +1,6 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// ignore_for_file: unused_local_variable
+
+
 import 'package:github/github.dart';
 import 'package:rnr/repos/sources/revancedapks.buildapps.dart';
 import 'package:test/test.dart';
@@ -7,12 +9,7 @@ void main() {
   test(
     'Test scraper',
     () async {
-      await dotenv.load();
-      final git = GitHub(
-        auth: Authentication.bearerToken(
-          dotenv.get('GITHUB_TEST_PAT'),
-        ),
-      );
+      final git = GitHub();
 
       final repo = BuildApps();
       final slug = RepositorySlug(repo.repoOwner, repo.repoName);

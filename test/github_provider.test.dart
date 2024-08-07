@@ -1,9 +1,7 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// ignore_for_file: unused_local_variable
+
 import 'package:github/github.dart';
-import 'package:riverpod/riverpod.dart';
-import 'package:rnr/providers/browse_provider.dart';
 import 'package:rnr/repos/sources/revanced.gmscore.dart';
-import 'package:rnr/repos/sources/revancedapks.buildapps.dart';
 import 'package:rnr/services/github.dart';
 import 'package:test/test.dart';
 
@@ -11,12 +9,7 @@ void main() {
   test(
     'Some description',
     () async {
-      await dotenv.load();
-      final git = GitHub(
-        auth: Authentication.bearerToken(
-          dotenv.get('GITHUB_TEST_PAT'),
-        ),
-      );
+      final git = GitHub();
 
       final repo = GmsCore();
       final slug = RepositorySlug(repo.repoOwner, repo.repoName);
@@ -34,3 +27,5 @@ void main() {
     },
   );
 }
+
+

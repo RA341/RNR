@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rnr/presentation/settings/settings.dart';
 import 'package:rnr/utils/services.dart';
 import 'package:rnr/utils/utils.dart';
 

@@ -54,6 +54,22 @@ class BuildApps extends IRepo {
       // 3 = "v7.10.52"
       // 4 = "arm"
       // 5 = "v7a.apk"
+
+      if (!splits[3].startsWith('v')) {
+        // handle this weird edge case
+        // 0 = "reddit"
+        // 1 = "extended"
+        // 2 = "revanced"
+        // 3 = "extended" <-- extra
+        // 4 = "v2024.17.0"
+        // 5 = "all.apk"
+        final name = '${splits[0]} ${splits[1]} ${splits[2]}';
+        final version = splits[4];
+        // remove .apk
+        final arch = splits[5].split('.')[0];
+        return (name, version, arch);
+      }
+
       final name = '${splits[0]} ${splits[1]} ${splits[2]}';
       final version = splits[3];
       // remove .apk

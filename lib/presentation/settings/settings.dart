@@ -1,11 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:rnr/presentation/settings/github_pat_input.dart';
 import 'package:rnr/presentation/settings/gms_toggle.dart';
-import 'package:rnr/utils/services.dart';
-import 'package:http/http.dart' as http;
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
