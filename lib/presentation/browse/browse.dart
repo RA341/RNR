@@ -1,6 +1,9 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:github/github.dart';
+import 'package:rnr/models/display_app.dart';
 import 'package:rnr/models/display_release.dart';
 import 'package:rnr/presentation/browse/browse_header.dart';
 import 'package:rnr/presentation/shared/error_widget.dart';
@@ -12,11 +15,11 @@ import 'package:rnr/utils/utils.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
-class BrowsePage extends StatelessWidget {
+class BrowsePage extends ConsumerWidget {
   const BrowsePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return repoList.isEmpty
         ? const Center(child: Text('No Repos configured'))
         : const Column(
@@ -257,48 +260,120 @@ class AssetView extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       child: Column(
-        children: assets
-            .map(
-              (asset) => Padding(
-                padding: const EdgeInsets.all(10),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(15),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(asset.name),
-                          Text(asset.version),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text('Arch: ${asset.arch}'),
-                          Text(
-                            '${convertBytes(asset.size).toStringAsPrecision(4)} MB',
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              sourceMan.installNewApp(rel.release, asset);
-                            },
-                            icon: const Icon(Icons.download),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            )
+        children: assets.entries
+            .map((e) => AssetTile(release: rel.release, asset: e.value))
             .toList(),
       ),
     );
+  }
+}
+
+class AssetTile extends ConsumerStatefulWidget {
+  const AssetTile({
+    required this.release,
+    required this.asset,
+    super.key,
+  });
+
+  final Release release;
+  final List<DisplayApp> asset;
+
+  @override
+  ConsumerState createState() => _AssetTileState();
+}
+
+class _AssetTileState extends ConsumerState<AssetTile> {
+  int selectedArch = 0;
+
+  List<DisplayApp> get assets => widget.asset;
+
+  String? get arch => DeviceManager.i.supportedArch;
+
+  @override
+  void initState() {
+    if (arch != null && assets.length != 1) {
+      final res = assets.indexWhere(
+        (element) {
+          return element.arch.toLowerCase().contains(
+                arch!.toLowerCase(),
+              );
+        },
+      );
+      if (res != -1) {
+        selectedArch = res;
+      }
+    }
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.blueAccent,
+          borderRadius: BorderRadius.all(
+            Radius.circular(15),
+          ),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(assets[selectedArch].name),
+                Text(assets[selectedArch].version),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                PopupMenuButton(
+                  initialValue: selectedArch,
+                  onSelected: _changeArch,
+                  itemBuilder: (BuildContext context) => assets
+                      .mapIndexed(
+                        (index, element) => PopupMenuItem(
+                          value: index,
+                          child: Text(element.arch),
+                        ),
+                      )
+                      .toList(),
+                  child: Text(
+                    'Arch: ${assets[selectedArch].arch}',
+                    style: const TextStyle(
+                      height: 3,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      backgroundColor: Colors.blueGrey,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Text(
+                  '${convertBytes(assets[selectedArch].size).toStringAsPrecision(4)} MB',
+                ),
+                IconButton(
+                  onPressed: () async {
+                    await sourceMan.installNewApp(
+                      widget.release,
+                      assets[selectedArch],
+                    );
+                  },
+                  icon: const Icon(Icons.download),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _changeArch(int value) {
+    selectedArch = value;
+    setState(() {});
   }
 }

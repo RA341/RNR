@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:github/github.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rnr/database/database.dart';
 import 'package:rnr/presentation/settings/settings.dart';
 import 'package:rnr/services/app_manager.dart';
@@ -47,6 +48,9 @@ Future<void> initServices() async {
 
   final prefs = await SharedPreferences.getInstance();
   reg<SettingsManager>(() => SettingsManager(prefs));
+
+  // dev arch
+  await DeviceManager.i.getDeviceInfo();
 
   // file manager init
   await fileMan.init();

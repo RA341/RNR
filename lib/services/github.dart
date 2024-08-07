@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:github/github.dart';
+import 'package:rnr/models/display_app.dart';
 import 'package:rnr/models/display_release.dart';
 import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/utils/services.dart';
@@ -53,14 +54,14 @@ class GithubManger {
           logger.w('No assets found for tag:${release.id}');
           yield DisplayRelease(
             release: release,
-            assets: repo.filterReleases(release),
+            assets: null,
           );
         }
 
         try {
           yield DisplayRelease(
             release: release,
-            assets: repo.filterReleases(release),
+            assets: convertListToMap(repo.filterReleases(release)),
           );
         } catch (e) {
           logger.e(
@@ -82,6 +83,19 @@ class GithubManger {
         yield* Stream.error('Failed to get release {tag.name}');
       }
     }
+  }
+
+  Map<String, List<DisplayApp>> convertListToMap(List<DisplayApp> input) {
+    final result = <String, List<DisplayApp>>{};
+
+    for (var element in input) {
+      result.update(
+        element.name,
+        (value) => value..add(element),
+        ifAbsent: () => [element],
+      );
+    }
+    return result;
   }
 
   Stream<Tag> collectTags(

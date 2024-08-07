@@ -26,6 +26,8 @@ Future<bool> testToken(String token) async {
   }
 }
 
+final deviceMan = DeviceManager.i;
+
 class DeviceManager {
   DeviceManager._();
 

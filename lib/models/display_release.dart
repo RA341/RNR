@@ -5,5 +5,5 @@ class DisplayRelease {
   DisplayRelease({required this.release, required this.assets});
 
   final Release release;
-  final List<DisplayApp>? assets;
+  final Map<String, List<DisplayApp>>? assets;
 }

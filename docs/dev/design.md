@@ -7,3 +7,7 @@ github repo url -> get releases -> regex parse releases -> if user has previous 
                                          |           |
                                          |           | ---> if user does not have app downloaded store repo url and maintain app info  
 |
+
+
+## Some commands 
+puro flutter build apk ;  adb install build\app\outputs\flutter-apk\app-release.apk
