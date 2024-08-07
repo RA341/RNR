@@ -48,8 +48,8 @@ try {
         gitCommand('add pubspec.yaml');
         // Commit the changes with a message
         gitCommand('commit -m "chore: Update pubspec.yaml version"');
-        const url = remoteUrl.subarray(remoteUrl.indexOf(':') + 3)
 
+        const url = remoteUrl.substring(remoteUrl.indexOf(':') + 3)
         console.log(url)
         gitCommand(`push https://${accessToken}@${url}`);
 
