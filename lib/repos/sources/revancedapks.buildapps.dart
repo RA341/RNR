@@ -33,65 +33,34 @@ class BuildApps extends IRepo {
   (String, String, String) _collectMetaData(String assetName) {
     final splits = assetName.split('-');
 
-    if (splits.length == 5) {
-      // handling
-      // 0 = "instagram"
-      // 1 = "revanced"
-      // 2 = "v341.0.0.45.100"
-      // 3 = "arm"
-      // 4 = "v7a.apk"
-      final name = '${splits[0]} ${splits[1]}';
-      final version = splits[2];
-      // remove .apk
-      final arch = '${splits[3]}-${splits[4].split('.')[0]}';
+    var name = '';
+    var arch = '';
+    var version = '';
 
-      return (name, version, arch);
-    } else if (splits.length == 6) {
-      // handling extended
-      // 0 = "music"
-      // 1 = "revanced"
-      // 2 = "extended"
-      // 3 = "v7.10.52"
-      // 4 = "arm"
-      // 5 = "v7a.apk"
-
-      if (!splits[3].startsWith('v')) {
-        // handle this weird edge case
-        // 0 = "reddit"
-        // 1 = "extended"
-        // 2 = "revanced"
-        // 3 = "extended" <-- extra
-        // 4 = "v2024.17.0"
-        // 5 = "all.apk"
-        final name = '${splits[0]} ${splits[1]} ${splits[2]}';
-        final version = splits[4];
-        // remove .apk
-        final arch = splits[5].split('.')[0];
-        return (name, version, arch);
+    var archIndex = 0;
+    for (final (ind, split) in splits.indexed) {
+      // version must start with v followed by a number
+      if (split.startsWith('v') && num.tryParse(split[1]) != null) {
+        version = split;
+        archIndex = ind + 1;
+        break;
+      } else {
+        name += '$split ';
       }
-
-      final name = '${splits[0]} ${splits[1]} ${splits[2]}';
-      final version = splits[3];
-      // remove .apk
-      final arch = '${splits[4]}-${splits[5].split('.')[0]}';
-
-      return (name, version, arch);
-    } else if (splits.length == 4) {
-      // handling
-      // 0 = "reddit"
-      // 1 = "revanced"
-      // 2 = "v2024.17.0"
-      // 3 = "all.apk"
-
-      final name = '${splits[0]} ${splits[1]}';
-      final version = splits[2];
-      // remove .apk
-      final arch = splits[3].split('.')[0];
-
-      return (name, version, arch);
     }
 
-    // unhandled case
-    return (assetName, '', '');
+    // rest of the elements are part of the architecture scheme
+    // e.g
+    // 0 = "music"
+    // 1 = "revanced"
+    // 2 = "extended"
+    // 3 = "v7.10.52"
+    // 4 = "arm" <----- archIndex
+    // 5 = "v7a.apk"
+    // join from arch-index and remove '.apk;
+    arch = splits.sublist(archIndex).join('-').replaceFirst('.apk','');
+    name = name.trim();
+
+    return (name, version, arch);
   }
 }
