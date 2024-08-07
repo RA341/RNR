@@ -4,15 +4,10 @@ library;
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get_it/get_it.dart';
-import 'package:github/github.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:rnr/database/database.dart';
-import 'package:rnr/presentation/settings/settings.dart';
-import 'package:rnr/services/app_manager.dart';
 import 'package:rnr/services/file_manager.dart';
 import 'package:rnr/services/github.dart';
 import 'package:rnr/services/settings.dart';

@@ -1,19 +1,12 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:github/github.dart';
 import 'package:rnr/repos/sources/krvstek.rvx-apks.dart';
-import 'package:rnr/repos/sources/revancedapks.buildapps.dart';
 import 'package:test/test.dart';
 
 void main() {
   test(
     'Test scraper',
-        () async {
-      await dotenv.load();
-      final git = GitHub(
-        auth: Authentication.bearerToken(
-          dotenv.get('GITHUB_TEST_PAT'),
-        ),
-      );
+    () async {
+      final git = GitHub();
 
       final repo = RvxApks();
 

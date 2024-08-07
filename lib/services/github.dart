@@ -24,7 +24,7 @@ class GithubManger {
   }
 
   Future<void> collectRepoInfo(IRepo repo) async {
-    final repoUrl = 'https://github.com/${repo.repoOwner}/${repo.repoName}';
+    // final repoUrl = 'https://github.com/${repo.repoOwner}/${repo.repoName}';
   }
 
   (int?, int?, DateTime?) getGithubApiLimits() {

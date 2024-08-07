@@ -2,7 +2,6 @@ import 'package:archive_info/archive_info.dart';
 import 'package:dio/dio.dart';
 import 'package:github/github.dart';
 import 'package:rnr/models/display_app.dart';
-import 'package:rnr/models/installed_app.dart';
 import 'package:rnr/services/app_manager.dart';
 import 'package:rnr/services/file_manager.dart';
 import 'package:rnr/utils/services.dart';

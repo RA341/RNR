@@ -11,7 +11,7 @@ class GmsCoreWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.watch(repoProvider(gmsCore));
 
-    final fullListLength = repo.length + 1;
+    // final fullListLength = repo.length + 1;
 
     final releases = repo.map((e) => ActionButtons(rel: e)).toList();
 

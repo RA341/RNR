@@ -1,8 +1,6 @@
 import 'package:apk_installer/apk_installer.dart';
-import 'package:flutter/foundation.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
-import 'package:rnr/services/file_manager.dart';
 
 final appMan = AppManager.i;
 
