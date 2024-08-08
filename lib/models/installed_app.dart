@@ -1,20 +1,49 @@
 /// Model to describe apps shown in browse view
 class InstalledApp {
   InstalledApp({
-    required this.name,
-    required this.arch,
+    required this.appName,
+    required this.packageName,
     required this.version,
-    required this.downloadUrl,
-    required this.repo,
+    required this.arch,
+    required this.repoOwner,
+    required this.repoName,
   });
 
-  String name;
+  factory InstalledApp.fromList(
+    String packageName,
+    List<String> info,
+  ) {
+    if (info.length != 5) {
+      ArgumentError('Invalid list length need 5 got ${info.length}');
+    }
+
+    return InstalledApp(
+      packageName: packageName,
+      appName: info[0],
+      version: info[1],
+      arch: info[2],
+      repoName: info[3],
+      repoOwner: info[4],
+    );
+  }
+
+  (String, List<String>) toList() => (
+        packageName,
+        [appName, version, arch, repoName, repoOwner],
+      );
+
+  /// app name from the repo
+  String appName;
+
+  /// app package name when its installed
+  String packageName;
+
+  /// version retrieved from asset name (NOT THE ACTUAL VERSION INSTALLED)
   String version;
 
   /// App architecture
   String arch;
 
-  String repo;
-
-  String downloadUrl;
+  String repoName;
+  String repoOwner;
 }
