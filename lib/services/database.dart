@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseManager {
   late final Database db;
-  late final StoreRef<String, List<String>> installedAppStore;
+  late final StoreRef<String, List<Object?>> installedAppStore;
 
   Future<void> init() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -17,7 +17,7 @@ class DatabaseManager {
     final dbPath = join(dir.path, 'rnr.db');
     db = await databaseFactoryIo.openDatabase(dbPath);
 
-    installedAppStore = StoreRef<String, List<String>>('installedapps');
+    installedAppStore = StoreRef<String, List<Object?>>('installedapps');
   }
 
   Future<void> dispose() async {
@@ -39,7 +39,9 @@ class DatabaseManager {
 
     return installedAppStore.stream(db, filter: filter).map(
       (event) {
-        return InstalledApp.fromList(event.key, event.value);
+        logger.i(event.key);
+        final d = event.value.map((e) => e! as String).toList();
+        return InstalledApp.fromList(event.key, d);
       },
     );
   }

@@ -22,8 +22,7 @@ class AppManager {
     return ApkInstaller.installApk(filePath: apkPath.path);
   }
 
-
-  Future<AppInfo> getInstalledAppNameByPackage(String packageName){
+  Future<AppInfo> getInstalledAppNameByPackage(String packageName) {
     return InstalledApps.getAppInfo(packageName);
   }
 
