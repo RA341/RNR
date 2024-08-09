@@ -54,7 +54,7 @@ dev_dependencies:
     sdk: flutter
   test: ^1.25.2
   json_serializable: ^6.8.0
-  build_runner: ^2.4.12
+  build_runner: 2.4.11
   flutter_lints: ^4.0.0
   custom_lint:
   riverpod_lint:
