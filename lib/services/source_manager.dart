@@ -1,7 +1,10 @@
 import 'package:archive_info/archive_info.dart';
 import 'package:dio/dio.dart';
 import 'package:github/github.dart';
+import 'package:installed_apps/installed_apps.dart';
 import 'package:rnr/models/display_app.dart';
+import 'package:rnr/models/installed_app.dart';
+import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/services/app_manager.dart';
 import 'package:rnr/services/file_manager.dart';
 import 'package:rnr/utils/services.dart';
@@ -15,8 +18,12 @@ class AppSourceManager {
 
   static AppSourceManager get i => inst ??= AppSourceManager._();
 
-  Future<void> installNewApp(Release release, DisplayApp app) async {
-    final fileName = '${app.name}_${app.arch}';
+  Future<void> installNewApp(
+    Release release,
+    DisplayApp app,
+    IRepo repo,
+  ) async {
+    final fileName = '${app.name}_${app.arch}.apk';
     final savePath = fileMan.generateDownloadPath(fileName);
 
     final cancelToken = CancelToken();
@@ -25,39 +32,50 @@ class AppSourceManager {
     await fileMan.downloadApk(
       savePath.path,
       app.downloadUrl,
-      (p0, p1) {},
+      (p0, p1) {
+        print('Downloading $p0/$p1');
+      },
       cancelToken,
     );
+
+    await appMan.installApk(savePath);
 
     // run archive info
     final packageName = await ArchiveInfo().getPackageName(savePath.path);
 
-    if (packageName == null) {
+    if (packageName != null) {
+      final iApp = InstalledApp(
+        appName: app.name,
+        packageName: packageName,
+        version: app.version,
+        arch: app.arch,
+        repoOwner: repo.repoOwner,
+        repoName: repo.repoName,
+      );
+      await database.updateInstalledAppInfo(app: iApp);
+
+      logger.i('App $fileName installed, with packagename: $packageName');
+    } else {
       logger
         ..e('Could not find package name from apk file: ${savePath.path}')
-        ..i('add the app manually');
+        ..i('add the app will not be tracked');
     }
 
-    await appMan.installApk(savePath).onError(
-      (error, stackTrace) {
-        print(error);
-      },
-    ).then(
+    // todo make this into a proper try catch
+    // for now both onerror and oncompleted are called
+    await fileMan.deleteApk(savePath).then(
       (value) {
-        print('app should be installed');
+        logger.d('deleted apk: ${savePath.path}');
+      },
+    ).onError(
+      (error, stackTrace) {
+        logger.e(
+          'Failed to delete apk: ${savePath.path}',
+          error: error,
+          stackTrace: stackTrace,
+        );
       },
     );
-
-    print('wow');
-
-    logger.i('App $fileName installed, with packagename: $packageName');
-
-    // store metadata info
-    //  get installed package name
-
-    // install app
-
-    // store to db
   }
 
   void updateExistingApp(String packageName, Release release, DisplayApp app) {
@@ -72,21 +90,4 @@ class AppSourceManager {
 
     // store to db
   }
-
-// void writeRelease(
-//     String repoUrl, int id, List<AppAsset> assets, String packageName) async {
-//   final inst = InstalledRelease();
-//   inst.repoUrl = repoUrl;
-//   inst.tag = id;
-//   inst.installed = [];
-//
-//   for (var asset in assets) {
-//     final installedApp = InstalledApp();
-//     installedApp.webId = asset.name;
-//     installedApp.appId = packageName;
-//     inst.installed!.add(installedApp);
-//   }
-//
-//   await isar.writeTxn(() => isar.installedReleases.put(inst));
-// }
 }

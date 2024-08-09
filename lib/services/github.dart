@@ -5,17 +5,11 @@ import 'package:rnr/models/display_release.dart';
 import 'package:rnr/repos/irepo.dart';
 import 'package:rnr/utils/services.dart';
 
-final git = GithubManger.i;
-
 class GithubManger {
-  GithubManger._() {
+  GithubManger() {
     final tk = settings.getGithubToken();
     gitI = tk == null ? GitHub() : GitHub(auth: Authentication.bearerToken(tk));
   }
-
-  static GithubManger? gitMan;
-
-  static GithubManger get i => gitMan ??= GithubManger._();
 
   late final GitHub gitI;
 
@@ -41,7 +35,7 @@ class GithubManger {
       repo.repoName,
     );
 
-    final releases = git.gitI.listReleasesWithPagination(
+    final releases = gitI.listReleasesWithPagination(
       slug,
       page: page,
       perPage: perPage,
