@@ -8,6 +8,7 @@ import 'package:rnr/models/display_release.dart';
 import 'package:rnr/presentation/browse/browse_header.dart';
 import 'package:rnr/presentation/shared/error_widget.dart';
 import 'package:rnr/providers/browse_provider.dart';
+import 'package:rnr/providers/installed_apps_provider.dart';
 import 'package:rnr/repos/repo_list.dart';
 import 'package:rnr/services/source_manager.dart';
 import 'package:rnr/utils/services.dart';
@@ -360,7 +361,9 @@ class _AssetTileState extends ConsumerState<AssetTile> {
                     await sourceMan.installNewApp(
                       widget.release,
                       assets[selectedArch],
+                      repoList[ref.watch(repoIndexProvider)],
                     );
+                    ref.invalidate(installedDbProvider);
                   },
                   icon: const Icon(Icons.download),
                 ),
