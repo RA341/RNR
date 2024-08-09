@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/RA341/RNR/compare/1.1.0...1.1.1) (2024-08-09)
+
+
+### Bug Fixes
+
+* initial app tracking still wip ([3ea7291](https://github.com/RA341/RNR/commit/3ea7291431c9c5b7e6860fd3fae348271dc381cb))
+
 # [1.1.0](https://github.com/RA341/RNR/compare/1.0.0...1.1.0) (2024-08-07)
 
 
