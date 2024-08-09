@@ -7,10 +7,10 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:rnr/database/database.dart';
+import 'package:rnr/services/database.dart';
 import 'package:rnr/services/file_manager.dart';
 import 'package:rnr/services/github.dart';
-import 'package:rnr/services/settings.dart';
+import 'package:rnr/services/settings_manager.dart';
 import 'package:rnr/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,12 +22,15 @@ final get = getI.get;
 final logger = get<Logger>();
 final settings = get<SettingsManager>();
 final git = get<GithubManger>();
+final database = get<DatabaseManager>();
 
 Future<void> initServices() async {
   await initLogger();
 
   // db
-  reg<AppDatabase>(AppDatabase.new);
+  final database = DatabaseManager();
+  await database.init();
+  reg<DatabaseManager>(() => database);
 
   // prefs
   final prefs = await SharedPreferences.getInstance();

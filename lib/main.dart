@@ -54,14 +54,21 @@ class Root extends ConsumerWidget {
         onPressed: () async {
           final extDir = await getExternalStorageDirectory();
           final logFile =
-              await File('${extDir!.path}/rnr.log').create(recursive: true);
+          await File('${extDir!.path}/rnr.log').create(recursive: true);
           await OpenFile.open(logFile.path);
           // GithubManger.i.getReleases();
         },
       ),
+
       bottomNavigationBar: BottomNavigationBar(
+        enableFeedback: false,
+        type: BottomNavigationBarType.fixed,
         currentIndex: index,
-        onTap: (value) => ref.read(bottomNavProvider.notifier).state = value,
+        showUnselectedLabels: true,
+        onTap: (value) =>
+        ref
+            .read(bottomNavProvider.notifier)
+            .state = value,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
